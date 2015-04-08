@@ -137,17 +137,17 @@ define([
     // Browsing FS
     self.closeNewBrowser = function() {
       $("#newAppLocationBrowser").hide();
-    }
+    };
     self.openedTab = ko.observable('templates');
     self.showTemplates = function() {
       self.openedTab('templates');
-    }
+    };
     self.showSeeds = function() {
       self.openedTab('seed');
-    }
+    };
     self.showTrp = function() {
       self.openedTab('trp');
-    }
+    };
 
     self.fs = new FileSelection({
       title: "Select location for new application",
@@ -193,7 +193,7 @@ define([
       }
 
       return false;
-    }
+    };
 
     self.toggleDirectoryBrowser = function() {
       $('#newAppForm, #newAppLocationBrowser').toggle();
@@ -206,7 +206,7 @@ define([
     self.clickTemplate = function(event) {
       // TODO - Remove this bit here
       $('input:radio', this).prop('checked',true);
-    }
+    };
 
     self.clickBrowseAppLocation = function(event) {
       self.toggleDirectoryBrowser();
