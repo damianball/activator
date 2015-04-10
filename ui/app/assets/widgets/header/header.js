@@ -3,6 +3,7 @@
  */
 define([
   'services/sbt',
+  'commons/websocket',
   'widgets/omnisearch/omnisearch',
   'widgets/breadcrumb/breadcrumb',
   'widgets/layout/layoutManager',
@@ -12,6 +13,7 @@ define([
   'css!./header'
 ], function(
   sbt,
+  websocket,
   omnisearch,
   breadcrumb,
   layoutManager,
@@ -27,7 +29,12 @@ define([
   });
 
   function remedy() {
-    window.alert("Click");
+    var msg = {request: 'WriteTypesafeProperties'};
+
+    sbt.tasks.reactivePlatform.askForTypesafeId(function(id) {
+      msg.subscriptionId = id;
+      websocket.send(msg);
+    });
   }
 
   var bannerMessage = ko.computed(function () {

@@ -2,49 +2,19 @@
  Copyright (C) 2014 Typesafe, Inc <http://typesafe.com>
  */
 define([
-  'services/typesafe',
   'commons/settings',
   'commons/websocket',
   'widgets/fileselection/fileselection',
   'text!./templates.html',
-  'widgets/modals/modals',
   'css!./templates'
 ], function(
-    typesafe,
   settings,
   websocket,
   FileSelection,
-  tpl,
-  modals
+  tpl
 ) {
-
-  var trpInfoSeen = settings.observable("reactive-platform.accepted-license", false);
-
-  var typesafeId = settings.observable("TypesafeID", "");
-
-  function askForTypesafeId(callback){
-    var message = $("<article/>").html("<p>You are creating Typesafe Reactive Platform project, which requires a Typesafe ID. This requires you to have a valid Typesafe.com account.</p><p>You can sign up for a free trial, on the <a href='https://typesafe.com/product/typesafe-reactive-platform/id' target='_blank'>subscription ID page</a> page.<p>")[0];
-    modals.show({
-      shape: "large",
-      title: "Submit your Typesafe ID",
-      body: message,
-      ok: "Ok",
-      callback: function() {
-          var obs = typesafe.getSubscriptionDetail();
-          obs.subscribe(function (v) {
-            if (v.type === "subscriptionDetails") {
-              typesafeId(v.data.id);
-              callback(typesafeId());
-            }
-          });
-        },
-      cancel: "Cancel"
-    });
-  }
-
   // Memorise last used directory
   var lastFolder = settings.observable("last-folder", window.homeFolder);
-
 
   function formToJson(form) {
     var data = $(form).serializeArray();
@@ -77,7 +47,6 @@ define([
     self.filterValue = ko.observable("");
     self.tags = window.tags;
     self.lastFolder = lastFolder;
-    self.trpInfoSeen = trpInfoSeen;
 
     self.acceptTrp = function(){
       self.trpInfoSeen(true);
@@ -179,18 +148,9 @@ define([
       var msg = formToJson("#newApp");
       msg.request = 'CreateNewApplication';
 
-      if (self.currentApp().tags.indexOf("reactive-platform") >= 0) {
-        askForTypesafeId(function(id) {
-          msg.subscriptionId = id;
-          websocket.send(msg);
-          lastFolder(parentFolder); // memorise parent as default location
-          $('#working, #open, #new').toggle();
-        });
-      } else {
-        websocket.send(msg);
-        lastFolder(parentFolder); // memorise parent as default location
-        $('#working, #open, #new').toggle();
-      }
+      websocket.send(msg);
+      lastFolder(parentFolder); // memorise parent as default location
+      $('#working, #open, #new').toggle();
 
       return false;
     };

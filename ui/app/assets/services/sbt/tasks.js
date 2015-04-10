@@ -2,16 +2,20 @@
  Copyright (C) 2014 Typesafe, Inc <http://typesafe.com>
  */
 define([
+  'commons/settings',
   'commons/websocket',
   'commons/stream',
   'commons/types',
+  'services/typesafe',
   './app',
   'widgets/modals/modals',
   'services/monitoring/monitoringSolutions'
 ], function(
+  settings,
   websocket,
   Stream,
   types,
+  typesafe,
   app,
   modals,
   monitoringSolutions
@@ -24,6 +28,55 @@ define([
   var executions = ko.observableArray([]);
   var executionsByJobId = {};
   var tasksById = {};
+
+
+  var typesafeId = settings.observable("TypesafeID", "");
+  var activeOk = ko.computed(function () {
+    var id = typesafeId();
+    return (id && (id.length === 36));
+  });
+
+  function saveTypesafeID(e){
+    var id = e.target.value.trim();
+    typesafeId(id);
+  }
+
+  function getIDFromTypesafeCom(cont) {
+    return function (v) {
+      var obs = typesafe.getSubscriptionDetail();
+      obs.subscribe(function (v) {
+        if (v.type === "subscriptionDetails") {
+          typesafeId(v.data.id);
+        }
+        cont();
+      });
+    };
+  }
+
+  typesafeId.subscribe(function (v) {
+    var form = $(".typesafeId-form");
+    if (form) {
+      form.val(v);
+    }
+  });
+
+  function askForTypesafeId(callback){
+    var message = $("<article/>").html("<p>You are opening a Typesafe Reactive Platform project, which requires a Typesafe ID.</p><p>You can retrieve your ID, or sign up for a free trial, on the <a href='https://typesafe.com/product/typesafe-reactive-platform/id' target='_blank'>subscription ID page</a> page.<p><p class='input'/></p><p><p class='get-from-typesafe'/></p>")[0];
+    $("<input class='typesafeId-form' type='text' />").change(saveTypesafeID).keyup(saveTypesafeID).val(typesafeId()).appendTo($(".input", message));
+    $("<button class='from-typesafe-button'>Get from Typesafe.com</button>").click(getIDFromTypesafeCom(function () {askForTypesafeId(callback);})).appendTo($(".get-from-typesafe", message));
+    modals.show({
+      shape: "large",
+      title: "Submit your Typesafe ID",
+      body: message,
+      ok: "Submit",
+      okEnabled: activeOk,
+      callback: function() {
+        var id = typesafeId();
+        callback(id);
+      },
+      cancel: "Cancel"
+    });
+  }
 
   function findExecutionIdByTaskId(id) {
     return tasksById[id] && tasksById[id].executionId;
@@ -64,6 +117,8 @@ define([
     self.fullUpdate = ko.observable(false);
     self.majorUpdate = ko.observable(false);
     self.isReactivePlatformProject = ko.observable(false);
+    self.askForTypesafeId = askForTypesafeId;
+    self.typesafeId = typesafeId;
     self.reset = function () {
       self.platformRelease(null);
       self.propertiesFileExists(false);
@@ -263,7 +318,7 @@ define([
   var sbtEventStream = websocket.subscribe('type','sbt');
   var subTypeEventStream = function(subType) {
     return sbtEventStream.matchOnAttribute('subType',subType);
-  }
+  };
 
   // Tasks
   subTypeEventStream("TaskStarted").each(function(message) {

@@ -23,6 +23,44 @@
     }
   }
 
+  .get-from-typesafe {
+    position: relative;
+    height: 40px;
+  }
+
+  .from-typesafe-button {
+    display: inline-block;
+    padding: 6px 12px;
+    line-height: inherit;
+    vertical-align: middle;
+    background: @blue;
+    color: #fff;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-size: 13px;
+    border-radius: 3px;
+    .pcenter();
+    .title();
+    g {
+      .transition();
+      fill: #fff;
+    }
+    .transition();
+    &:hover, &.active {
+      background: @blue-dkr;
+    }
+
+    margin: 0 5px;
+    border: 1px solid @blue;
+    &.light {
+      background: none;
+      border-color: @grey;
+      color: @grey;
+      &:hover {
+        background: @slate;
+      }
+    }
+  }
 
   .button {
     display: inline-block;
@@ -30,8 +68,6 @@
     line-height: inherit;
     vertical-align: middle;
     background: @blue;
-    margin: 1px;
-    border-left-width: 0;
     color: #fff;
     text-transform: uppercase;
     cursor: pointer;

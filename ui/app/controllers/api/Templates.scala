@@ -70,30 +70,8 @@ object Templates extends Controller {
     }
   }
 
-  private def bestEffortCreateTypesafeProperties(location: java.io.File, subscriptionIdOption: Option[String]): Unit =
-    subscriptionIdOption.filter(_.trim.nonEmpty).map { subscriptionId =>
-      val propertiesFile = new java.io.File(location, "project/typesafe.properties")
-      try {
-        // templates should not have the file already, but if they do, punt because
-        // we don't know what's going on.
-        if (location.exists && !propertiesFile.exists) {
-          propertiesFile.getParentFile().mkdirs() // in case project/ doesn't exist
-          val props = new java.util.Properties()
-          props.setProperty("typesafe.subscription", subscriptionId)
-          val stream = new java.io.FileOutputStream(propertiesFile)
-          props.store(stream, "Typesafe Reactive Platform subscription ID, see https://typesafe.com/subscription")
-          stream.close()
-        } else {
-          System.out.println(s"Not writing project/typesafe.properties to $location ${if (location.exists) s"($location does not exist)"} ${if (propertiesFile.exists) s"($propertiesFile already exists)"}")
-        }
-      } catch {
-        case NonFatal(e) =>
-          System.err.println(s"Failed to write $propertiesFile: ${e.getClass.getName}: ${e.getMessage}")
-      }
-    }
-
   // this is not a controller method, also invoked by HomePageActor
-  def doCloneTemplate(templateId: String, location: java.io.File, name: Option[String], subscriptionId: Option[String]): Future[ProcessResult[Unit]] = {
+  def doCloneTemplate(templateId: String, location: java.io.File, name: Option[String]): Future[ProcessResult[Unit]] = {
     import scala.concurrent.ExecutionContext.Implicits._
     // for now, hardcode that we always filter metadata if it is NOT a templateTemplate, and
     // never do if it is a templateTemplate. this may be a toggle in the UI somehow later.
@@ -112,10 +90,7 @@ object Templates extends Controller {
         location,
         name,
         filterMetadata = !templateOpt.map(_.metadata.templateTemplate).getOrElse(false),
-        additionalFiles = UICacheHelper.scriptFilesForCloning) map { result =>
-          bestEffortCreateTypesafeProperties(location, subscriptionId)
-          result
-        }
+        additionalFiles = UICacheHelper.scriptFilesForCloning)
     }
   }
 
@@ -124,9 +99,8 @@ object Templates extends Controller {
       val location = new java.io.File((request.body \ "location").as[String])
       val templateid = (request.body \ "template").as[String]
       val name = (request.body \ "name").asOpt[String]
-      val subscriptionId = (request.body \ "subscriptionId").asOpt[String]
       import scala.concurrent.ExecutionContext.Implicits._
-      val result = doCloneTemplate(templateid, location, name, subscriptionId)
+      val result = doCloneTemplate(templateid, location, name)
       result.map(x => Ok(request.body)).recover {
         case e => NotAcceptable(e.getMessage)
       }

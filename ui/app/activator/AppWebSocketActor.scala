@@ -10,6 +10,7 @@ import play.api.libs.json.Json._
 import play.api.libs.json._
 import activator.JsonHelper._
 import scala.reflect.ClassTag
+import scala.util.control.NonFatal
 import scala.util.{ Failure, Success }
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import akka.util.Timeout
@@ -34,6 +35,8 @@ class AppWebSocketActor(val config: AppConfig,
       case InspectRequest(m) => for (cActor <- consoleActor) cActor ! HandleRequest(json)
       case AppDynamicsRequest(m) => handleAppDynamicsRequest(m)
       case NewRelicRequest(m) => handleNewRelicRequest(m)
+      case WriteTypesafeProperties(msg) =>
+        AppWebSocketActor.bestEffortCreateTypesafeProperties(config.location, msg.subscriptionId)
       case _ => log.debug("unhandled message on web socket: {}", json)
     }
   }
@@ -207,6 +210,31 @@ object AppWebSocketActor {
   val requestExecution = "RequestExecution"
   val cancelExecution = "CancelExecution"
   val possibleAutoCompletions = "PossibleAutoCompletions"
+
+  def bestEffortCreateTypesafeProperties(location: java.io.File, subscriptionId: String): Unit = {
+    val sid = subscriptionId.trim
+    if (sid.nonEmpty) {
+      val propertiesFile = new java.io.File(location, "project/typesafe.properties")
+      try {
+        // templates should not have the file already, but if they do, punt because
+        // we don't know what's going on.
+        if (location.exists && !propertiesFile.exists) {
+          propertiesFile.getParentFile().mkdirs() // in case project/ doesn't exist
+          val props = new java.util.Properties()
+          props.setProperty("typesafe.subscription", sid)
+          val stream = new java.io.FileOutputStream(propertiesFile)
+          props.store(stream, "Typesafe Reactive Platform subscription ID, see https://typesafe.com/subscription")
+          stream.close()
+        } else {
+          System.out.println(s"Not writing project/typesafe.properties to $location ${if (location.exists) s"($location does not exist)"} ${if (propertiesFile.exists) s"($propertiesFile already exists)"}")
+        }
+      } catch {
+        case NonFatal(e) =>
+          System.err.println(s"Failed to write $propertiesFile: ${e.getClass.getName}: ${e.getMessage}")
+      }
+    }
+  }
+
 }
 
 case class InspectRequest(json: JsValue)
@@ -214,6 +242,20 @@ case class InspectRequest(json: JsValue)
 case class SbtRequest(json: JsValue)
 
 case class SbtPayload(serialId: Long, requestType: String, command: String, executionId: Option[Long])
+
+case class WriteTypesafeProperties(subscriptionId: String)
+
+object WriteTypesafeProperties {
+  val tag = "WriteTypesafeProperties"
+
+  implicit val writeTypesafePropertiesReads: Reads[WriteTypesafeProperties] =
+    extractRequest[WriteTypesafeProperties](tag)((__ \ "subscriptionId").read[String].map(WriteTypesafeProperties.apply _))
+
+  implicit val writeTypesafePropertiesWrites: Writes[WriteTypesafeProperties] =
+    emitRequest(tag)(in => obj("subscriptionId" -> in.subscriptionId))
+
+  def unapply(in: JsValue): Option[WriteTypesafeProperties] = Json.fromJson[WriteTypesafeProperties](in).asOpt
+}
 
 object InspectRequest {
   val tag = "InspectRequest"

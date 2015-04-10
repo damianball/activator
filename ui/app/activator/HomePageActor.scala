@@ -33,22 +33,20 @@ object HomePageActor {
     def unapply(in: JsValue): Option[OpenExistingApplication] =
       Json.fromJson[OpenExistingApplication](in).asOpt
   }
-  case class CreateNewApplication(location: String, templateId: String, projectName: Option[String], subscriptionId: Option[String])
+  case class CreateNewApplication(location: String, templateId: String, projectName: Option[String])
   object CreateNewApplication {
     val tag = "CreateNewApplication"
     implicit val createNewApplicationReads: Reads[CreateNewApplication] =
       extractRequest(tag) {
         ((__ \ "location").read[String] and
           (__ \ "template").readNullable[String] and
-          (__ \ "name").readNullable[String] and
-          (__ \ "subscriptionId").readNullable[String])((l, t, n, id) => CreateNewApplication(l, t.getOrElse(""), n, id))
+          (__ \ "name").readNullable[String])((l, t, n) => CreateNewApplication(l, t.getOrElse(""), n))
       }
     implicit val createNewApplicationWrites: Writes[CreateNewApplication] =
       emitRequest(tag) { in =>
         obj("location" -> in.location,
           "template" -> in.templateId,
-          "name" -> in.projectName,
-          "subscriptionId" -> in.subscriptionId)
+          "name" -> in.projectName)
       }
 
     def unapply(in: JsValue): Option[CreateNewApplication] =
@@ -99,7 +97,7 @@ class HomePageActor(typesafeComActor: ActorRef, lookupTimeout: Timeout) extends 
       context.actorOf(TypesafeComProxyUIActor.props(req, typesafeComActor, self))
     case WebSocketActor.Ping(ping) => produce(WebSocketActor.Pong(ping.cookie))
     case OpenExistingApplication(msg) => openExistingApplication(msg.location)
-    case CreateNewApplication(msg) => createNewApplication(msg.location, msg.templateId, msg.projectName, msg.subscriptionId)
+    case CreateNewApplication(msg) => createNewApplication(msg.location, msg.templateId, msg.projectName)
     case _ =>
       log.error(s"HomeActor: received unknown msg: $json")
       produce(BadRequest(json.toString, Seq(s"Could not parse JSON for request: ${json}")))
@@ -116,7 +114,7 @@ class HomePageActor(typesafeComActor: ActorRef, lookupTimeout: Timeout) extends 
   }
 
   // Goes off and tries to create/load an application.
-  def createNewApplication(location: String, template: String, projectName: Option[String], subscriptionId: Option[String]): Unit = {
+  def createNewApplication(location: String, template: String, projectName: Option[String]): Unit = {
     import context.dispatcher
     val appLocation = new java.io.File(location)
     // a chance of knowing what the error is.
@@ -124,8 +122,7 @@ class HomePageActor(typesafeComActor: ActorRef, lookupTimeout: Timeout) extends 
       controllers.api.Templates.doCloneTemplate(
         template,
         appLocation,
-        projectName,
-        subscriptionId) map (result => result map (_ => appLocation))
+        projectName) map (result => result map (_ => appLocation))
 
     // Ensure feedback happens after clone-ing is done.
     for (result <- installed) {

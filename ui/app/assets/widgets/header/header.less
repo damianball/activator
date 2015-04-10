@@ -11,6 +11,17 @@
   }
 }
 
+.typesafeId-form {
+  display: block;
+  margin: 20px auto;
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid @grey;
+  font-size: 18px;
+  width: 80%;
+  color: #fff;
+}
+
 #header {
   position: fixed;
   top: 0;
@@ -40,13 +51,40 @@
   font-family: Roboto, Helvetica, sans-serif;
   font-weight: 400;
   font-size: 24px;
+  .button {
+    display: inline-block;
+    padding: 6px 12px;
+    line-height: inherit;
+    vertical-align: middle;
+    background: @blue;
+    color: #fff;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-size: 13px;
+    border-radius: 3px;
+    .title();
+    g {
+      .transition();
+      fill: #fff;
+    }
+    .transition();
+    &:hover, &.active {
+      background: @blue-dkr;
+    }
+
+    margin: 0 5px;
+    border: 1px solid @blue;
+    &.light {
+      background: none;
+      border-color: @grey;
+      color: @grey;
+      &:hover {
+        background: @slate;
+      }
+    }
+  }
   p {
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-right: -50%;
-    transform: translate(-50%, -50%);
+    .pcenter();
   }
   .properties-filename {
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
