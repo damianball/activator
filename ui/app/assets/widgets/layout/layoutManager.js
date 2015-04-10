@@ -14,6 +14,7 @@ define([
   var panelShape =        settings.observable("layoutManager.panelShape", "right1");
   var panelOpenedSet =    settings.observable("layoutManager.panelOpened", false);
   var navigationOpened =  settings.observable("layoutManager.navigationOpened", true);
+  var bannerOpened =      ko.observable(false);
 
   var panelWidth  = settings.observable("layoutManager.panelWidth", 350);
   var panelHeight = settings.observable("layoutManager.panelHeight", 300);
@@ -66,30 +67,34 @@ define([
     panelOpenedSet: panelOpenedSet,
     panelOpened: panelOpened,
     navigationOpened: navigationOpened,
+    bannerOpened: bannerOpened,
     startLayout: startLayout,
 
-    panelChange: function(o,e) {
+    panelChange: function (o, e) {
       panelShape(e.target.className);
       panelOpened(true);
     },
-    panelToggle: function() {
-      if (router.current().id === "tutorial" && !panelOpenedSet()){
+    panelToggle: function () {
+      if (router.current().id === "tutorial" && !panelOpenedSet()) {
         window.location.hash = "#build"
       }
       panelOpenedSet(!panelOpenedSet());
     },
-    navigationToggle: function() {
+    navigationToggle: function () {
       navigationOpened(!navigationOpened());
     },
-    togglePanelOptions: function(o,e) {
+    bannerToggle: function () {
+      bannerOpened(!bannerOpened());
+    },
+    togglePanelOptions: function (o, e) {
       e.preventDefault();
       e.stopPropagation();
       $("#layoutManager dd").toggle();
     },
-    closePanelOptions: function() {
+    closePanelOptions: function () {
       $("#layoutManager dd").hide();
     }
-  }
+  };
 
   return State;
 

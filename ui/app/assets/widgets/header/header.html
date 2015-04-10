@@ -1,18 +1,21 @@
 <header id="header">
-  <button class="toggleNavigation" data-bind="click: layoutManager.navigationToggle"></button>
-  <div class="omnisearch-wrapper">
-    <!-- ko include: omnisearch --><!-- /ko -->
-    <!-- ko include: breadcrumb --><!-- /ko -->
+  <div id="header-top">
+    <button class="toggleNavigation" data-bind="click: layoutManager.navigationToggle"></button>
+    <div class="omnisearch-wrapper">
+      <!-- ko include: omnisearch --><!-- /ko -->
+      <!-- ko include: breadcrumb --><!-- /ko -->
+    </div>
+    <!-- ko include: notifications --><!-- /ko -->
+    <!-- ko include: help --><!-- /ko -->
+    <dl id="layoutManager" data-bind="click: layoutManager.closePanelOptions">
+      <dt data-bind="click: layoutManager.panelToggle">
+        <span class="all-options" data-bind="click: layoutManager.togglePanelOptions"></span>
+      </dt>
+      <dd style="display:none;">
+        <button class="right1" data-bind="click: layoutManager.panelChange"></button>
+        <button class="bottom1" data-bind="click: layoutManager.panelChange"></button>
+      </dd>
+    </dl>
   </div>
-  <!-- ko include: notifications --><!-- /ko -->
-  <!-- ko include: help --><!-- /ko -->
-  <dl id="layoutManager" data-bind="click: layoutManager.closePanelOptions">
-    <dt data-bind="click: layoutManager.panelToggle">
-      <span class="all-options" data-bind="click: layoutManager.togglePanelOptions"></span>
-    </dt>
-    <dd style="display:none;">
-      <button class="right1" data-bind="click: layoutManager.panelChange"></button>
-      <button class="bottom1" data-bind="click: layoutManager.panelChange"></button>
-    </dd>
-  </dl>
+  <div id="banner" data-bind="template: { name: function() { return bannerMessage(); } }"></div>
 </header>

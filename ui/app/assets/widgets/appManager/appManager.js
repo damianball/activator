@@ -11,7 +11,7 @@ define([
 ){
 
   return ko.bindhtml(tpl, {
-    trp: sbt.tasks.platformRelease
+    trp: sbt.tasks.reactivePlatform.platformRelease
   });
 
 });

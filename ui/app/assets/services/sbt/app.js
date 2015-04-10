@@ -10,7 +10,7 @@ define([
   var projects = ko.observableArray([]);
   var currentProject =  ko.observable("");
   var removeExistingProjects = function() {
-    this.currentProject()
+    this.currentProject();
     this.projects([]);
   };
 

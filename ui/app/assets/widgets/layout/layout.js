@@ -21,11 +21,11 @@ define([
     navigation: navigation,
     panels: panels,
     layoutManager: layoutManager
-  }
+  };
 
   return {
     render: function() {
-      $(document.body).attr('data-bind',"css: {'navigation-opened': layoutManager.navigationOpened, 'navigation-sneak': navigation.sneak, 'panel-opened': layoutManager.panelOpened}, attr: { 'data-shape': layoutManager.panelShape }");
+      $(document.body).attr('data-bind',"css: {'navigation-opened': layoutManager.navigationOpened, 'banner-opened': layoutManager.bannerOpened, 'navigation-sneak': navigation.sneak, 'panel-opened': layoutManager.panelOpened}, attr: { 'data-shape': layoutManager.panelShape }");
       ko.applyBindings(State);
 
       document.body.appendChild(header);
@@ -41,4 +41,4 @@ define([
       $('#app main').replaceWith(body);
     }
   }
-})
+});

@@ -10,7 +10,7 @@
 // Defaults
 #app {
   position: absolute;
-  top: 50px;
+  top: @header-banner-closed;
   right: 0;
   bottom: 0;
   left: 0;
@@ -75,6 +75,25 @@
   .transition();
 }
 
+#banner {
+  -webkit-transform: translateY(-100%);
+  -moz-transform: translateY(-100%);
+  transform: translateY(-100%);
+  .transition();
+}
+
+// Banner opened
+body.banner-opened {
+  #app {
+    top: @header-banner-opened;
+  }
+  #banner {
+    -webkit-transform: none;
+    -moz-transform: none;
+    transform: none;
+  }
+}
+
 // Navigation opened
 body.navigation-opened {
   #header, #app {
@@ -91,6 +110,7 @@ body.navigation-sneak {
     -webkit-transform: none;
     -moz-transform: none;
     transform: none;
+    z-index: 98;
   }
 }
 

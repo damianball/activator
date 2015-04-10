@@ -17,11 +17,40 @@
   left: 0;
   right: 0;
   height: 50px;
+  box-shadow: 0 3px 0 rgba(0,0,0,.1);
+  z-index: 99;
+}
+
+#header-top {
+  position: relative;
+  height: @header-banner-closed;
   .row();
   background: @slate;
   color: #fff;
-  box-shadow: 0 3px 0 rgba(0,0,0,.1);
-  z-index: 99;
+  z-index: 10;
+}
+
+#banner {
+  position: relative;
+  height: @header-banner-height;
+  .row();
+  background: @red;
+  color: #fff;
+  z-index: 5;
+  font-family: Roboto, Helvetica, sans-serif;
+  font-weight: 400;
+  font-size: 24px;
+  p {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+  }
+  .properties-filename {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  }
 }
 
 #user, #layoutManager, #help {

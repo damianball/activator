@@ -132,7 +132,7 @@ define([
       self.filteredTrp(window.trp.filter(function(o){
         return searchRelevantFileds(o, value);
       }));
-    }
+    };
 
     // Browsing FS
     self.closeNewBrowser = function() {

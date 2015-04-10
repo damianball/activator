@@ -51,6 +51,35 @@ define([
     test:     ko.observable(false)
   };
 
+  var reactivePlatform = (function() {
+    var self = {};
+    self.platformRelease = ko.observable(null);
+    self.propertiesFileExists = ko.observable(false);
+    self.subscriptionId = ko.observable(null);
+    self.authorizedForProduction = ko.observable(false);
+    self.availableFullVersion = ko.observable(null);
+    self.availableMajorVersion = ko.observable(null);
+    self.installedFullVersion = ko.observable(null);
+    self.installedMajorVersion = ko.observable(null);
+    self.fullUpdate = ko.observable(false);
+    self.majorUpdate = ko.observable(false);
+    self.isReactivePlatformProject = ko.observable(false);
+    self.reset = function () {
+      self.platformRelease(null);
+      self.propertiesFileExists(false);
+      self.subscriptionId(null);
+      self.authorizedForProduction(false);
+      self.availableFullVersion(null);
+      self.availableMajorVersion(null);
+      self.installedFullVersion(null);
+      self.installedMajorVersion(null);
+      self.fullUpdate(false);
+      self.majorUpdate(false);
+      self.isReactivePlatformProject(false);
+    };
+    return self;
+  })();
+
   var mostRecentWithCompilationErrors = ko.observable(null);
   var mostRecentWithTestResults = ko.observable(null);
 
@@ -155,7 +184,7 @@ define([
       return true;
     }
     return false;
-  }
+  };
 
   var playApplicationUrl = ko.observable(null);
   var playServerStarted = ko.computed(function() {
@@ -288,7 +317,6 @@ define([
     }
   });
 
-  var platformRelease = ko.observable(null);
   subTypeEventStream("DetachedEvent").each(function(message) {
     var event = message.event;
 
@@ -302,20 +330,21 @@ define([
     // load a build with no RP plugin present.
     if (name === "com.typesafe.rp.protocol.SubscriptionIdEvent") {
       debug && console.log("SubscriptionIdEvent: ", event.serialized);
-      // event.serialized.fileExists
-      // event.serialized.subscriptionId // may be null
+      reactivePlatform.propertiesFileExists(event.serialized.fileExists);
+      reactivePlatform.subscriptionId(event.serialized.subscriptionId);
+      reactivePlatform.isReactivePlatformProject(true);
     } else if (name === "com.typesafe.rp.protocol.SubscriptionLevelEvent") {
       debug && console.log("SubscriptionLevelEvent: ", event.serialized);
-      // event.serialized.authorizedForProduction
+      reactivePlatform.authorizedForProduction(event.serialized.authorizedForProduction);
     } else if (name === "com.typesafe.rp.protocol.PlatformRelease") {
       debug && console.log("PlatformRelease: ", event.serialized);
-      platformRelease(event.serialized);
-      // event.serialized.availableFullVersion
-      // event.serialized.availableMajorVersion
-      // event.serialized.installedFullVersion
-      // event.serialized.installedMajorVersion
-      // event.serialized.fullUpdate // boolean
-      // event.serialized.majorUpdate // boolean
+      reactivePlatform.platformRelease(event.serialized);
+      reactivePlatform.availableFullVersion(event.serialized.availableFullVersion);
+      reactivePlatform.availableMajorVersion(event.serialized.availableMajorVersion);
+      reactivePlatform.installedFullVersion(event.serialized.installedFullVersion);
+      reactivePlatform.installedMajorVersion(event.serialized.installedMajorVersion);
+      reactivePlatform.fullUpdate(event.serialized.fullUpdate);
+      reactivePlatform.majorUpdate(event.serialized.majorUpdate);
     } else {
       debug && console.log("Ignoring DetachedEvent " + name, event.serialized);
     }
@@ -446,6 +475,7 @@ define([
   subTypeEventStream("BuildStructureChanged").each(function(message) {
     var projects = message.event.structure.projects;
     if (projects !== undefined && projects.length > 0) {
+      reactivePlatform.reset();
       app.removeExistingProjects();
 
       $.each(projects, function(i, v) {
@@ -797,7 +827,7 @@ define([
     playServerStarted:        playServerStarted,
     inspectSupported:        inspectSupported,
     whyInspectIsNotSupported: whyInspectIsNotSupported,
-    platformRelease:         platformRelease,
+    reactivePlatform:        reactivePlatform,
     active: {
       turnedOn:     "",
       compiling:    "",

@@ -35,7 +35,7 @@ define([
         window.location.hash = "#code"+ fs.relative(errors[0].position.sourcePath)+":"+errors[0].position.line;
       }
     }
-  }
+  };
 
 
   var activate = function(scope) {
@@ -51,7 +51,7 @@ define([
     }).mouseenter(function() {
       clearTimeout(navigationSneakTimer);
     });
-  }
+  };
 
   return {
     render: function(){
@@ -61,4 +61,4 @@ define([
     }
   }
 
-})
+});

@@ -4,11 +4,13 @@
 define([
   'commons/websocket',
   'text!./working.html',
-  'widgets/modals/modals'
+  'widgets/modals/modals',
+  'widgets/layout/layoutManager'
 ], function(
   websocket,
   tpl,
-  modals
+  modals,
+  layoutManager
 ) {
 
   var logs = ko.observableArray([]);

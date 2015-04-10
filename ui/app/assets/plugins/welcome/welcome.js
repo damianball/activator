@@ -46,7 +46,7 @@ define([
     self.appVersion = window.serverAppVersion;
     self.currentStatus = sbt.events.appStatus;
 
-    self.trp = sbt.tasks.platformRelease;
+    self.trp = sbt.tasks.reactivePlatform.platformRelease;
 
     self.presentationMode = settings.observable("presentationMode", false);
 
