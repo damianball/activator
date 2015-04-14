@@ -28,14 +28,14 @@ define([
     return irpp && (!pfe || !sid);
   });
 
-  function remedy() {
+  var remedy = function () {
     var msg = {request: 'WriteTypesafeProperties'};
 
     sbt.tasks.reactivePlatform.askForTypesafeId(function(id) {
       msg.subscriptionId = id;
       websocket.send(msg);
     });
-  }
+  };
 
   var bannerMessage = ko.computed(function () {
     if (showBanner()) {
