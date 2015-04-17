@@ -73,11 +73,9 @@ define([
   var maybeWarnThenRedirect = function(appId) {
     var warning = null;
 
-    if (failedDueToNoTypesafeProperties) {
-      warning = "If you are creating Typesafe Reactive Platform project you must add a '<code>typesafe.properties</code>' file in the '<code>&lt;template&gt;/project</code>' folder.</p><p>The file must contain your subscription ID in the format '<code>typesafe.subscription=&lt;YOUR ID&gt;</code>'<br/>To get a free trial subscription ID visit: <a href='https://typesafe.com/account/id' target='_blank'>https://typesafe.com/account/id</a><p>";
-    } else if (failedDueToNoSubscriptionId) {
-      warning = "If you are creating Typesafe Reactive Platform project, <code>project/typesafe.properties</code> must  contain your subscription ID in the format '<code>typesafe.subscription=&lt;YOUR ID&gt;</code>'<br/>To get a free trial subscription ID visit: <a href='https://typesafe.com/account/id' target='_blank'>https://typesafe.com/account/id</a><p>";
-    } else if (failedToLoad) {
+    // We only show the "failed to load" dialog if it's not related to RP-related issues
+    // RP-related issues will be presented later
+    if (failedToLoad && !(failedDueToNoTypesafeProperties || failedDueToNoSubscriptionId)) {
       warning = "The build configuration for this project did not load correctly.";
     }
 
