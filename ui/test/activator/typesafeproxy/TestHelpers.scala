@@ -2,6 +2,7 @@ package activator.typesafeproxy
 
 import java.util.concurrent.atomic.AtomicReference
 
+import activator.typesafeproxy.TypesafeComProxy.ActionPair
 import akka.actor._
 import akka.testkit._
 import com.typesafe.config.{ Config, ConfigFactory }
@@ -95,13 +96,13 @@ class AkkaTestKitHelper(_system: ActorSystem) extends TestKit(_system) with Impl
     }
   }
 
-  def fakeAuthenticatorProps(version: Long, replyTo: ActorRef, webSocketActor: ActorRef): Props =
+  def fakeAuthenticatorProps(request: ActionPair[AuthenticationState]#Get, version: Long, replyTo: ActorRef, webSocketActor: ActorRef): Props =
     Props(new FakeAuthenticator(version, replyTo, webSocketActor))
 
-  def fakeSubscriptionRPCProps(version: Long, replyTo: ActorRef, webSocketActor: ActorRef): Props =
+  def fakeSubscriptionRPCProps(request: ActionPair[SubscriberData]#Get, version: Long, replyTo: ActorRef, webSocketActor: ActorRef): Props =
     Props(new FakeSubscriptionRPC(version, replyTo, webSocketActor))
 
-  def fakeActivatorInfoProps(version: Long, replyTo: ActorRef, webSocketActor: ActorRef): Props =
+  def fakeActivatorInfoProps(request: ActionPair[ActivatorLatestInfo]#Get, version: Long, replyTo: ActorRef, webSocketActor: ActorRef): Props =
     Props(new FakeActivatorInfo(version, replyTo, webSocketActor))
 
   def withProxy[T](initialCacheState: TypesafeComProxy.CacheState = TypesafeComProxy.initialStateBuilder(authGetter = fakeAuthenticatorProps,

@@ -135,6 +135,15 @@ define([
     return self;
   })();
 
+  reactivePlatform.subscriptionId.subscribe(function (v) {
+    if (v) {
+      var r = typesafe.checkSubscriptionId(v);
+      r.subscribe(function (result) {
+        console.log("Subscription ID results: ",result);
+      });
+    }
+  });
+
   var mostRecentWithCompilationErrors = ko.observable(null);
   var mostRecentWithTestResults = ko.observable(null);
 

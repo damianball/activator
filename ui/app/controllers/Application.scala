@@ -328,9 +328,11 @@ object Application extends Controller {
   val loginEndpoint = AuthenticationActor.httpDoAuthenticate(typesafeComConfig.login.url, typesafeComConfig.login.timeout, defaultContext)_
   val subscriberEndpoint = SubscriptionDataActor.httpGetSubscriptionData(typesafeComConfig.subscriptionData.url, typesafeComConfig.subscriptionData.timeout, defaultContext)_
   val activatorInfoEndpoint = ActivatorLatestActor.httpGetActivatorLatest(typesafeComConfig.activatorInfo.url, typesafeComConfig.activatorInfo.timeout, defaultContext)_
-  val initState = TypesafeComProxy.initialStateBuilder(authGetter = AuthenticationActor.props(loginEndpoint, UIActor.props, _, _, _),
-    subscriberDataGetter = SubscriptionDataActor.props(subscriberEndpoint, UIActor.props, _, _, _),
-    activatorInfoGetter = ActivatorLatestActor.props(activatorInfoEndpoint, UIActor.props, _, _, _))
+  val httpJsonGetter = JsonGetterActor.httpGetJson(typesafeComConfig.activatorInfo.timeout, defaultContext)_
+  val initState = TypesafeComProxy.initialStateBuilder(authGetter = (_, v, r, w) => AuthenticationActor.props(loginEndpoint, UIActor.props, v, r, w),
+    subscriberDataGetter = (_, v, r, w) => SubscriptionDataActor.props(subscriberEndpoint, UIActor.props, v, r, w),
+    activatorInfoGetter = (_, v, r, w) => ActivatorLatestActor.props(activatorInfoEndpoint, UIActor.props, v, r, w),
+    httpJsonGetter = (req, v, r, w) => JsonGetterActor.props(req.url, httpJsonGetter, req.toPut, UIActor.props, v, r, w))
   val typesafeComActor = activator.Akka.system.actorOf(TypesafeComProxy.props(initialCacheState = initState))
 
   /** Opens a stream for home events. */

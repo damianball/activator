@@ -122,6 +122,38 @@ define([
     return response;
   }
 
+  function getJsonFromTypesafeCom(path) {
+    var id = pseudoUniqueId();
+    var response = ko.observable();
+    var subs = websocket.subscribe('tag','TypesafeComProxy');
+    proxyRequest("getFromTypesafeCom",{requestId: id, path: path});
+    subs.each(function(message) {
+      var type = message.type;
+      var requestId = null;
+      if (typeof message.requestId !== 'undefined' && message.requestId !== null) {
+        requestId = message.requestId;
+      }
+
+      if (requestId === id) {
+        if (type === "fromTypesafeCom") {
+          response(message);
+        } else if (type === "proxyFailure") {
+          response(message);
+        }
+      }
+    });
+
+    response.subscribe(function(newValue) {
+      subs.close();
+    });
+    return response;
+  }
+
+
+  function checkSubscriptionId(id) {
+    return getJsonFromTypesafeCom("product/typesafe-reactive-platform/api/idCheck/"+id);
+  }
+
   function getActivatorInfo() {
     var id = pseudoUniqueId();
     var response = ko.observable(null);
@@ -176,7 +208,8 @@ define([
         }
       }
     }
-  }
+  };
+
   window.addEventListener("message", receiveMessage, false);
 
   function subscribe(label, callback){
@@ -194,7 +227,9 @@ define([
     getSubscriptionDetail: getSubscriptionDetail,
     getActivatorInfo: getActivatorInfo,
     proxyUiRequestState: proxyUiRequestState,
-    sendCredentials: sendCredentials // useful for debugging
+    sendCredentials: sendCredentials, // useful for debugging
+    getJsonFromTypesafeCom: getJsonFromTypesafeCom,
+    checkSubscriptionId: checkSubscriptionId
   }
 
 });

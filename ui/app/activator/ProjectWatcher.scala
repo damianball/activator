@@ -91,7 +91,7 @@ class ProjectWatcher(val location: File, val newSourcesSocket: ActorRef, val app
     name.endsWith(".sbt")
   }
 
-  private def isTypesafeProperties(f: File): Boolean = f.getName =="typesafe.properties"
+  private def isTypesafeProperties(f: File): Boolean = f.getName == "typesafe.properties"
 
   private def scanBuildDir(dir: File): Set[File] = {
     dir.listFiles().toList.map { f =>

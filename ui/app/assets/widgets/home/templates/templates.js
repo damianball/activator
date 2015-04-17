@@ -47,6 +47,7 @@ define([
     self.filterValue = ko.observable("");
     self.tags = window.tags;
     self.lastFolder = lastFolder;
+    self.trpInfoSeen = ko.observable(false);
 
     self.acceptTrp = function(){
       self.trpInfoSeen(true);
