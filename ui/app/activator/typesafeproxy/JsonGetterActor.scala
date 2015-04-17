@@ -106,7 +106,6 @@ class JsonGetterActor(jsonUrl: String,
       context.become(onFailure(() => context.become(runRequest())))
     case x @ Failure(e) =>
       log.error(s"Unknown exception fetching $jsonUrl", e)
-      uiActor ! UIActor.RetryableRequests.Failure(e.getMessage, self, retryable = false)
       replyTo ! toPut(x, version, self)
       context.become(doStop())
   }

@@ -9,6 +9,7 @@ define([
   'services/typesafe',
   './app',
   'widgets/modals/modals',
+  'widgets/error/error',
   'services/monitoring/monitoringSolutions'
 ], function(
   settings,
@@ -18,6 +19,7 @@ define([
   typesafe,
   app,
   modals,
+  error,
   monitoringSolutions
 ) {
 
@@ -135,12 +137,50 @@ define([
     return self;
   })();
 
+  function needToAcceptLicense(callback){
+    var message = $("<article/>").html("<p>You must first accept the <a href='https://typesafe.com/account/id' target='_blank'>Typesafe Subscription Agreement</a> before proceeding.</p><p>After accepting the agreement click 'Continue'</p>")[0];
+    modals.show({
+      shape: "large",
+      title: "Accept the Typesafe Subscription Agreement",
+      body: message,
+      ok: "Continue",
+      callback: callback
+    });
+  }
+
+  function updatedAcceptLicense(callback){
+    var message = $("<article/>").html("<p>There are updated terms for the <a href='https://typesafe.com/account/id' target='_blank'>Typesafe Subscription Agreement</a>.</p>Accept before proceeding.</p><p>After accepting the agreement click 'Continue'</p>")[0];
+    modals.show({
+      shape: "large",
+      title: "Updated terms for the Typesafe Subscription Agreement",
+      body: message,
+      ok: "Continue",
+      callback: callback
+    });
+  }
+
+  function doCheckSubscriptionId(id) {
+    var r = typesafe.checkSubscriptionId(id);
+    r.subscribe(function (result) {
+      if (result.type ===  "fromTypesafeCom") {
+        if (result.data.idCheckResult === "valid") {
+          if (result.data.acceptedDate) {
+            if (result.data.acceptedDate < result.data.latestTermsDate) {
+              updatedAcceptLicense(function () {doCheckSubscriptionId(id);})
+            }
+          } else {
+            needToAcceptLicense(function () {doCheckSubscriptionId(id);})
+          }
+        } // TODO: else if (result.data.idCheckResult === "invalid") { ... }
+      } else if (result.type === "proxyFailure") {
+        error("Error","Unable to determine if Typesafe Subscription Agreement has been signed",null,null);
+      }
+    });
+  }
+
   reactivePlatform.subscriptionId.subscribe(function (v) {
     if (v) {
-      var r = typesafe.checkSubscriptionId(v);
-      r.subscribe(function (result) {
-        console.log("Subscription ID results: ",result);
-      });
+      doCheckSubscriptionId(v);
     }
   });
 
