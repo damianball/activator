@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<svg width="18px" height="16px" viewBox="0 0 18 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g fill="#00FF00" class="svg-success-green">
+        <path d="M0,6 L0,12 C0,14 2,18.0000001 6,14 L17,3 C19,1 16,-1 14,1 C12,3 6,9 5,9 C4,9 4,8 4,6 C4,4 0,3 0,6 L0,6 Z" class="svg-shape"/>
+    </g>
+</svg>

@@ -74,7 +74,7 @@ object Dependencies {
   // WebJars for the Activator UI
   val requirejs        = "org.webjars" % "requirejs" % "2.1.11"
   val jquery           = "org.webjars" % "jquery" % "2.0.3"
-  val knockout         = "org.webjars" % "knockout" % "3.0.0"
+  val knockout         = "org.webjars" % "knockout" % "3.3.0"
   val ace              = "org.webjars" % "ace" % "1.1.7-1"
   val keymage          = "org.webjars" % "keymage" % "1.0.1"
 

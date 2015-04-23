@@ -6,6 +6,7 @@ define([
   'widgets/navigation/navigation',
   'widgets/panels/panels',
   'widgets/modals/modals',
+  'widgets/typesafeIdForm/typesafeIdForm',
   './layoutManager',
   'css!./layout'
 ], function(
@@ -13,6 +14,7 @@ define([
   navigation,
   panels,
   modals,
+  typesafeIdForm,
   layoutManager
 ){
 
@@ -33,6 +35,7 @@ define([
       document.body.appendChild(wrapper[0]);
       document.body.appendChild(panels.render());
       document.body.appendChild(modals.render());
+      document.body.appendChild(typesafeIdForm);
 
       layoutManager.startLayout();
     },

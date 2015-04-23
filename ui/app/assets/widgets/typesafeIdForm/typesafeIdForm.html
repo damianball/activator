@@ -1,0 +1,23 @@
+<div data-bind="visible: visible" id="typesafe-id-form">
+  <div class="modal-wrapper">
+    <header>
+      <h2>Submit your Typesafe ID</h2>
+    </header>
+    <article>
+      <p>You are opening a Typesafe Reactive Platform project, which requires a Typesafe ID.</p>
+      <p>You can retrieve your ID, or sign up for a free trial, on the <a href='https://typesafe.com/product/typesafe-reactive-platform/id' target='_blank'>subscription ID page</a> page.</p>
+      <div class="input-wrapper"><div data-bind="css: typesafeIdStateClass"></div><input class='typesafeId-form' type='text' data-bind="textInput: typesafeId" /></div>
+      <p class='typesafe-id-error' data-bind='visible: errorVisible, html: typesafeIdError'></p>
+      <!-- ko if: continueVisible -->
+      <p class='get-from-typesafe'><button class='from-typesafe-button' data-bind="click: checkId">Continue</button></p>
+      <!-- /ko -->
+      <!-- ko if: getIDFromTypesafeComVisible -->
+      <p class='get-from-typesafe'><button class='from-typesafe-button' data-bind="click: getIDFromTypesafeCom">Get from Typesafe.com</button></p>
+      <!-- /ko -->
+    </article>
+    <footer>
+      <button class="light button" data-bind="click: clickCancel">Cancel</button>
+      <button class="main button" data-bind="enable: okEnabled, click: clickOk">Save</button>
+    </footer>
+  </div>
+</div>

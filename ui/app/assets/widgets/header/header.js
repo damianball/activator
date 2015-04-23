@@ -29,12 +29,7 @@ define([
   });
 
   var remedy = function () {
-    var msg = {request: 'WriteTypesafeProperties'};
-
-    sbt.tasks.reactivePlatform.askForTypesafeId(function(id) {
-      msg.subscriptionId = id;
-      websocket.send(msg);
-    });
+    sbt.tasks.reactivePlatform.typesafeIdFormVisible(true);
   };
 
   var bannerMessage = ko.computed(function () {
