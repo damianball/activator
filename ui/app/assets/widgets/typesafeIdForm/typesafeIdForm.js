@@ -27,18 +27,6 @@ define([
       var id = self.typesafeId();
       return (id && (id.length === 36));
     });
-    self.okEnabled = ko.computed(function () {
-      if (!self.lengthOk()) {
-        return false;
-      } else {
-        switch(self.acceptedTrpState()) {
-          case "ok":
-            return true;
-          default:
-            return false;
-        }
-      }
-    });
     self.getIDFromTypesafeCom = function() {
       var obs = typesafe.getSubscriptionDetail();
       obs.subscribe(function (v) {
@@ -128,6 +116,18 @@ define([
           return true;
         default:
           return false;
+      }
+    });
+    self.okEnabled = ko.computed(function () {
+      if (!self.lengthOk()) {
+        return false;
+      } else {
+        switch(self.acceptedTrpState()) {
+          case "ok":
+            return true;
+          default:
+            return false;
+        }
       }
     });
     self.getIDFromTypesafeComVisible = ko.computed(function () {
